@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  deepstream-face-detection:
+    build: .
+    image: deepstream-face-detection:latest
+    container_name: deepstream-face-detection
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility,video
+      - DISPLAY=${DISPLAY}
+    devices:
+      - /dev/video0:/dev/video0
+      - /dev/video1:/dev/video1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./output:/opt/nvidia/deepstream/deepstream/output
+      - ./config:/opt/nvidia/deepstream/deepstream/config
+    privileged: true
+    network_mode: host
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    command: ["python3", "face_detection_pipeline.py"]
